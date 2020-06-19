@@ -1,34 +1,38 @@
-import React, { useCallback } from 'react';
+import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import { FixedSizeList as List } from 'react-window';
+
+const Row = ({ style, data, index }) => (
+  <div class="row" style={style} key={data.repositories[index].id}>
+    <div class="col">{data.repositories[index].id}</div>
+    <div class="col">{data.repositories[index].name}</div>
+    <div class="col">{data.repositories[index].watchers_count}</div>
+  </div>
+);
 
 export const RepositoryListComponent = props => {
   const { className, repositories } = props;
 
-  const Row = useCallback(({ index, style  }) => (
-    <div class="row" style={style} key={repositories[index].id}>
-      <div class="col">{repositories[index].id}</div>
-      <div class="col">{repositories[index].name}</div>
-      <div class="col">{repositories[index].watchers_count}</div>
-    </div>
-  ), [repositories]);
+  const sortedRepositoriesWithHeader = useMemo(() => {
+    const sortedRepositories = repositories.slice(0).sort((a, b) => (a.stargazers_count > b.stargazers_count) ? -1 : 1);
+    return [
+      {
+        id: "Id",
+        name: "Name",
+        watchers_count: "Watcher Counts",
+      },
+      ...sortedRepositories,
+    ];
+  }, [repositories]);
 
-
-  return <div className={classNames(className, 'rokt-repository-list')}>
-    <div class="row">
-      <div class="col">Id</div>
-      <div class="col">Name</div>
-      <div class="col">Watcher Counts</div>
-    </div>
+  return (<div className={classNames(className, 'rokt-repository-list')}>
     <List
-    height={300}
-    itemCount={repositories.length}
-    itemSize={24}
-    
+      height={300}
+      itemCount={repositories.length}
+      itemSize={24}
+      itemData={{ repositories: sortedRepositoriesWithHeader }}
     >
       {Row}
     </List>
-  </div>
-
-
+  </div>);
 }
