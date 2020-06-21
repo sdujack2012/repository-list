@@ -13,7 +13,7 @@ const repositoriesSlice = createSlice({
   },
 });
 
-export const actions = repositoriesSlice.actions;
+export const { actions } = repositoriesSlice;
 
 export const rootReducer = combineReducers({
   repositories: repositoriesSlice.reducer,
